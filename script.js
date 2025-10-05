@@ -1,114 +1,143 @@
 // Helper function: writes any HTML into the #out div
 function render(html) {
-  document.getElementById('out').innerHTML = html
+  document.getElementById('out').innerHTML = html;
 }
 
 /* 
   Function 1 — greet()
-  ---------------------
-  - Prompt the user for their name
-  - If they type something, display "Hello, NAME!"
-  - If they cancel or leave blank, show a friendly message
 */
 function greet() {
-  // TODO: Write your code here
   const name = prompt("What is your name?");
-  if (!name) {
-    render("<p> No name given. Please insert name.</p>");
+  if (!name || name.trim() === "") {
+    render("<p>No name given. Please insert your name.</p>");
     return;
   }
-  render(`<p>Hello, ${name}. </p>`)
+  render(`<p>Hello, ${name.trim()}.</p>`);
 }
 
 /* 
   Function 2 — averageNumbers()
-  ------------------------------
-  - Prompt the user for a list of numbers separated by commas
-  - Split the input into an array, turn into numbers
-  - Calculate the average
-  - Display the average AND the list of numbers
 */
 function averageNumbers() {
-  // TODO: Write your code here
   const nums = prompt("Please enter numbers separated by commas.");
   if (!nums) {
-    render("<p>No numbers inserted. Please insert number</p>");
+    render("<p>No numbers inserted. Please enter numbers.</p>");
     return;
   }
 
   const givenNums = nums.split(',').map(n => parseFloat(n.trim()));
+  if (givenNums.some(isNaN)) {
+    render("<p>Please enter valid numbers only.</p>");
+    return;
+  }
+
   const sum = givenNums.reduce((a, b) => a + b, 0);
   const avg = sum / givenNums.length;
 
   const list = givenNums
-    .map(n => `<li class="list-item">${n}</li>`)
+    .map(n => `<li class="list-group-item">${n}</li>`)
     .join("");
 
-  render(`<p>Average: <Strong>${avg.toFixed(2)}</Strong></p>
+  render(`<p>Average: <strong>${avg.toFixed(2)}</strong></p>
   <ul class="list-group">${list}</ul>`);
 }
 
 /* 
   Function 3 — timeOfDay()
-  -------------------------
-  - Get the current hour from the computer clock
-  - Decide whether it's morning, afternoon, or evening
-  - Display a message like "Good morning!" 
 */
 function timeOfDay() {
-  // TODO: Write your code here
-  const h = new Date().getHours()
-  let msg = ''
-  if (h < 12) { msg = "GOOD MORNING YOU LAZY BUM" }
-  else if (h < 18) { msg = "GOOD AFTERNOON, WHY ARE YOU AWAKE" }
-  else { msg = "GO TO BED DUM DUM" }
-  render(`<p>${msg}</p>`)
+  const h = new Date().getHours();
+  let msg = '';
+  if (h < 12) {
+    msg = "Good morning!";
+  } else if (h < 18) {
+    msg = "Good afternoon!";
+  } else {
+    msg = "Good evening!";
+  }
+  render(`<p>${msg}</p>`);
 }
 
 /* 
   Function 4 — randomBetween()
-  -----------------------------
-  - Prompt the user for a minimum and maximum number
-  - Generate a random number between them
-  - Display the result
-  - Handle invalid input (like blanks or min >= max)
 */
 function randomBetween() {
-  // TODO: Write your code here
-  const min = parseInt(prompt('Enter a MIN number (the smaller one)'));
-  const max = parseInt(prompt('Enter a MAX number (the bigger one)'));
+  const minInput = prompt('Enter a MIN number (the smaller one)');
+  const maxInput = prompt('Enter a MAX number (the bigger one)');
+
+  const min = parseInt(minInput);
+  const max = parseInt(maxInput);
 
   if (isNaN(min) || isNaN(max)) {
-    render("PLease enter valid numbers!");
+    render("<p>Please enter valid numbers!</p>");
     return;
   }
-  if (min > max) {
-    render("MAX MUST be greater than the MIN");
+  if (min >= max) {
+    render("<p>MAX must be greater than MIN.</p>");
     return;
   }
   const rndNum = Math.floor(Math.random() * (max - min + 1) + min);
   render(
-    `<p>Random number between ${min} an ${max}: <strong>${rndNum}</strong></p>`
+    `<p>Random number between ${min} and ${max}: <strong>${rndNum}</strong></p>`
   );
-
 }
 
 /* 
   Function 5 — clearOutput()
-  ---------------------------
-  - Clear whatever is inside #out
-  - Replace it with a placeholder message like "Output cleared."
 */
 function clearOutput() {
-  // TODO: Write your code here
+  render("<p>Output cleared.</p>");
+}
+
+// ----- Student Challenge Functions ----- //
+
+// 1) Change the page title text to something new.
+function changeTitle() {
+  document.title = "🌟 Title Changed! 🌟";
+  const headerH1 = document.querySelector('header h1') || document.querySelector('header .container h1');
+  if (headerH1) {
+    headerH1.textContent = "🌟 JS Functions Demo - Title Changed!";
+  }
+}
+
+// 2) Cycle the output box text color each time clicked.
+const textColors = ["#b45309", "#15803d", "#d97706", "#78350f", "#dc2626"];
+let currentTextColorIndex = 0;
+function cycleTextColor() {
+  const outDiv = document.getElementById("out");
+  currentTextColorIndex = (currentTextColorIndex + 1) % textColors.length;
+  outDiv.style.color = textColors[currentTextColorIndex];
+}
+
+// 3) Change BOTH the text and background color of #out.
+const bgColors = ["#fef3c7", "#dc2626", "#15803d", "#d97706", "#78350f"];
+let currentBgColorIndex = 0;
+function changeTextAndBg() {
+  const outDiv = document.getElementById("out");
+  currentTextColorIndex = (currentTextColorIndex + 1) % textColors.length;
+  currentBgColorIndex = (currentBgColorIndex + 1) % bgColors.length;
+  outDiv.style.color = textColors[currentTextColorIndex];
+  outDiv.style.backgroundColor = bgColors[currentBgColorIndex];
+}
+
+// 4) Reset #out styles to default and clear output.
+function resetStyles() {
+  const outDiv = document.getElementById("out");
+  outDiv.style.color = "";
+  outDiv.style.backgroundColor = "";
+  render("Output cleared and styles reset.");
 }
 
 // ---- Event listeners for the demo buttons ----
-document.getElementById('btnGreet').addEventListener('click', greet)
-document.getElementById('btnAvg').addEventListener('click', averageNumbers)
-document.getElementById('btnTime').addEventListener('click', timeOfDay)
-document.getElementById('btnRandom').addEventListener('click', randomBetween)
-document.getElementById('btnClear').addEventListener('click', clearOutput)
+document.getElementById('btnGreet').addEventListener('click', greet);
+document.getElementById('btnAvg').addEventListener('click', averageNumbers);
+document.getElementById('btnTime').addEventListener('click', timeOfDay);
+document.getElementById('btnRandom').addEventListener('click', randomBetween);
+document.getElementById('btnClear').addEventListener('click', clearOutput);
+
+// ---- Event listeners for the student challenge buttons ----
+document.getElementById('btnChangeTitle').addEventListener('click', changeTitle);
+document.getElementById('btnCycleTextColor').addEventListener('click', cycleTextColor
 
 /* 
   ------------------------------------------
